@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenidx!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    
+</body>
+<script>
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('email');
+    const pass = localStorage.getItem('password');
+
+    if(token){
+        const bode = document.createElement('div');
+        let msg = `
+        <main class="container m-5">
+            <h1 class="text-center">Bienvenidx! ${email}</h1>
+            <p>Estás logueado</p>
+            <hr>
+            <h2 class= "p-3"> Ir a tu panel de control</h2>
+            <a href="#" class="btn btn-primary">Dashboard</a>
+        </main>
+        `;
+        bode.innerHTML = msg;
+        document.body.appendChild(bode);
+    }else{
+        window.location.href = '/login';
+    }
+
+    
+
+    let dash = document.querySelector('a');
+    dash.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('click',token)
+        fetch('/dashboard', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(res => {
+            if(res.status === 401){
+                console.log('Token expired');
+                localStorage.removeItem('token');
+                localStorage.removeItem('email');
+                window.location.href = '/login';
+            }
+            else if (res.status === 403) {
+            alert('Access denied. Invalid token.');
+            }
+            else{
+                window.location.href = 'dash.html';
+            }
+        
+        }).catch(err => {
+            console.log(err);
+            window.location.href = 'error.html';
+        })
+        
+      
+    });
+
+</script>
+</html>
